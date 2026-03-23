@@ -2631,8 +2631,8 @@ const SettingsOverlay: React.FC<SettingsOverlayProps> = ({ isOpen, onClose, init
                                                 {[
                                                     { id: 'whatToAnswer', label: 'What to Answer', icon: <Sparkles size={14} /> },
                                                     { id: 'clarify', label: 'Clarify', icon: <MessageSquare size={14} /> },
-                                                    { id: 'followUp', label: 'Follow Up', icon: <MessageSquare size={14} /> },
                                                     { id: 'dynamicAction4', label: 'Recap / Brainstorm', icon: <RefreshCw size={14} /> },
+                                                    { id: 'followUp', label: 'Follow Up', icon: <MessageSquare size={14} /> },
                                                     { id: 'answer', label: 'Answer / Record', icon: <Mic size={14} /> },
                                                     { id: 'codeHint', label: 'Get Code Hint', icon: <Zap size={14} /> },
                                                     { id: 'brainstorm', label: 'Brainstorm Approaches', icon: <Zap size={14} /> },
