@@ -315,6 +315,10 @@ export class WindowHelper {
     // Listen for overlay close (e.g. Cmd+W). Never truly destroy it — either
     // hide it (during a meeting) or switch back to launcher (between meetings).
     if (this.overlayWindow) {
+      this.overlayWindow.on('system-context-menu', (e) => {
+        e.preventDefault();
+      });
+
       this.overlayWindow.on('close', (e) => {
         if (this.overlayWindow?.isVisible()) {
           e.preventDefault();
