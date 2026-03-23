@@ -1,5 +1,5 @@
 
-import { BrowserWindow, screen, app } from "electron"
+import { BrowserWindow, screen, app, Menu } from "electron"
 import { AppState } from "./main"
 import path from "node:path"
 
@@ -262,8 +262,11 @@ export class WindowHelper {
     if (!this.launcherWindow) return
 
     // Suppress Windows system context menu on right-click (title bar)
-    this.launcherWindow.on('system-context-menu', (e) => {
+    this.launcherWindow.on('system-context-menu', (e, point) => {
       e.preventDefault();
+      if (!this.appState.getUndetectable()) {
+        this.showContextMenu(this.launcherWindow!, point);
+      }
     });
 
     this.launcherWindow.on("move", () => {
@@ -315,8 +318,11 @@ export class WindowHelper {
     // Listen for overlay close (e.g. Cmd+W). Never truly destroy it — either
     // hide it (during a meeting) or switch back to launcher (between meetings).
     if (this.overlayWindow) {
-      this.overlayWindow.on('system-context-menu', (e) => {
+      this.overlayWindow.on('system-context-menu', (e, point) => {
         e.preventDefault();
+        if (!this.appState.getUndetectable()) {
+          this.showContextMenu(this.overlayWindow!, point);
+        }
       });
 
       this.overlayWindow.on('close', (e) => {
@@ -556,6 +562,25 @@ export class WindowHelper {
   public moveWindowLeft(): void { this.moveActiveWindow(-this.step, 0) }
   public moveWindowDown(): void { this.moveActiveWindow(0, this.step) }
   public moveWindowUp(): void { this.moveActiveWindow(0, -this.step) }
+
+  private showContextMenu(win: BrowserWindow, point: { x: number; y: number }): void {
+    const template: Electron.MenuItemConstructorOptions[] = [
+      {
+        label: 'Developer Console',
+        accelerator: 'F12',
+        click: () => { win.webContents.toggleDevTools(); }
+      },
+      { type: 'separator' },
+      { role: 'reload' },
+      { role: 'forceReload' },
+      { type: 'separator' },
+      { role: 'copy' },
+      { role: 'paste' },
+      { role: 'selectAll' },
+    ];
+    const menu = Menu.buildFromTemplate(template);
+    menu.popup({ window: win, x: point.x, y: point.y });
+  }
 
   public minimizeWindow(): void {
     const win = this.getMainWindow();
