@@ -308,6 +308,9 @@ export interface ElectronAPI {
   cropperConfirmed: (bounds: { x: number; y: number; width: number; height: number }) => void;
   cropperCancelled: () => void;
   onResetCropper: (callback: (data: { hudPosition: { x: number; y: number } }) => void) => () => void;
+
+  // Platform
+  platform: NodeJS.Platform;
 }
 
 declare global {

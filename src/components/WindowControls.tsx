@@ -10,7 +10,7 @@ const WindowControls: React.FC = () => {
     });
   }, []);
 
-  const isMac = typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('mac');
+  const isMac = typeof window !== 'undefined' && window.electronAPI?.platform === 'darwin';
   if (isMac) return null;
 
   const handleMinimize = () => window.electronAPI?.windowMinimize();

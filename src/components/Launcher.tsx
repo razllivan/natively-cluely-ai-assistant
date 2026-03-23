@@ -350,7 +350,7 @@ const Launcher: React.FC<LauncherProps> = ({ onStartMeeting, onOpenSettings, onP
             <header className="relative h-[40px] shrink-0 flex items-center justify-between pl-0 pr-0 drag-region select-none bg-bg-secondary border-b border-border-subtle z-[200]">
                 {/* Left: Spacing for Traffic Lights + Navigation Arrows */}
                 <div className="flex items-center gap-1 no-drag">
-                    <div className={`shrink-0 ${typeof navigator !== 'undefined' && navigator.platform?.toLowerCase().includes('mac') ? 'w-[70px]' : 'w-0'}`} /> {/* Traffic Light Spacer - macOS only */}
+                    <div className={`shrink-0 ${typeof window !== 'undefined' && window.electronAPI?.platform === 'darwin' ? 'w-[70px]' : 'w-0'}`} /> {/* Traffic Light Spacer - macOS only */}
 
                     {/* Back Button */}
                     <button

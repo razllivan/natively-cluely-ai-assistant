@@ -574,7 +574,7 @@ export class WindowHelper {
     if (!win || win.isDestroyed()) return;
     if (this.opacityTimeout) clearTimeout(this.opacityTimeout);
 
-    // On Windows/Linux the 'close' event listener (line ~282) intercepts this
+    // On Windows/Linux the 'close' event listener (line ~296) intercepts this
     // and hides to tray unless the app is actually quitting.
     // On macOS, and for the overlay window, the respective 'close' handlers
     // manage the behavior as well.

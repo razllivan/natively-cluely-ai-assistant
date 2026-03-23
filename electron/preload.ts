@@ -268,6 +268,9 @@ interface ElectronAPI {
   cropperConfirmed: (bounds: Electron.Rectangle) => void;
   cropperCancelled: () => void;
   onResetCropper: (callback: (data: { hudPosition: { x: number; y: number } }) => void) => () => void;
+
+  // Platform
+  platform: NodeJS.Platform;
 }
 
 export const PROCESSING_EVENTS = {
@@ -1036,4 +1039,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
       ipcRenderer.removeListener('reset-cropper', subscription)
     }
   },
+
+  // Platform
+  platform: process.platform,
 } as ElectronAPI)
