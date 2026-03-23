@@ -249,9 +249,27 @@ export class KeybindManager {
     }
 
     public updateMenu() {
-        // Don't set application menu on Windows/Linux - hide it completely
+        // On Windows/Linux, set a minimal menu (for shortcuts like DevTools)
+        // but hide the menu bar from the UI
         if (process.platform !== 'darwin') {
-            Menu.setApplicationMenu(null);
+            const template: any[] = [
+                {
+                    label: 'View',
+                    submenu: [
+                        { role: 'reload' },
+                        { role: 'forceReload' },
+                        { role: 'toggleDevTools' },
+                        { type: 'separator' },
+                        { role: 'resetZoom' },
+                        { role: 'zoomIn' },
+                        { role: 'zoomOut' },
+                        { type: 'separator' },
+                        { role: 'togglefullscreen' }
+                    ]
+                }
+            ];
+            const menu = Menu.buildFromTemplate(template);
+            Menu.setApplicationMenu(menu);
             return;
         }
 
