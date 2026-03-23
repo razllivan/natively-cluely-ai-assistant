@@ -2,6 +2,7 @@ import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { MessageSquare, Link, Camera, Zap, Heart, User } from 'lucide-react';
 import { useShortcuts } from '../hooks/useShortcuts';
 import { useResolvedTheme } from '../hooks/useResolvedTheme';
+import { getPlatformShortcut } from '../utils/platformUtils';
 
 const SettingsPopup = () => {
     const { shortcuts } = useShortcuts();
@@ -337,7 +338,7 @@ const SettingsPopup = () => {
                     </div>
                     <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                         {/* Dynamic Keys for Toggle Visibility */}
-                        {(shortcuts.toggleVisibility || ['⌘', 'B']).map((key, index) => (
+                        {(shortcuts.toggleVisibility || getPlatformShortcut(['⌘', 'B'])).map((key, index) => (
                             <div key={index} className={`px-1.5 py-0.5 rounded border text-[10px] font-medium min-w-[20px] text-center ${shortcutKeyClass}`}>
                                 {key}
                             </div>
@@ -353,7 +354,7 @@ const SettingsPopup = () => {
                     </div>
                     <div className="flex gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
                         {/* Dynamic Keys for Take Screenshot */}
-                        {(shortcuts.takeScreenshot || ['⌘', 'H']).map((key, index) => (
+                        {(shortcuts.takeScreenshot || getPlatformShortcut(['⌘', 'H'])).map((key, index) => (
                             <div key={index} className={`px-1.5 py-0.5 rounded border text-[10px] font-medium min-w-[20px] text-center ${shortcutKeyClass}`}>
                                 {key}
                             </div>

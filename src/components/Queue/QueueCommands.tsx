@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react"
 import { IoLogOutOutline } from "react-icons/io5"
 import { Dialog, DialogContent, DialogClose } from "../ui/dialog"
+import { KeyBadge } from "../ui/KeyBadge"
+import { getPlatformShortcut, isMac } from "../../utils/platformUtils"
 
 interface QueueCommandsProps {
   onTooltipVisibilityChange: (visible: boolean, height: number) => void
@@ -121,7 +123,11 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
     }
   }
 
-  // Remove handleChatSend function
+  const keyToggle = getPlatformShortcut(['⌘', 'B'])
+  const keySolve = getPlatformShortcut(['⌘', 'Enter'])
+  const keyHint = getPlatformShortcut(['⌘', '6'])
+  const keyBrainstorm = getPlatformShortcut(['⌘', '7'])
+  const keyScreenshot = getPlatformShortcut(['⌘', 'H'])
 
   return (
     <div className="w-fit">
@@ -129,31 +135,14 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
         {/* Show/Hide */}
         <div className="flex items-center gap-2">
           <span className="text-[11px] leading-none">Show/Hide</span>
-          <div className="flex gap-1">
-            <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-              ⌘
-            </button>
-            <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-              B
-            </button>
-          </div>
+          <KeyBadge keys={keyToggle} />
         </div>
-
-        {/* Screenshot */}
-        {/* Removed screenshot button from main bar for seamless screenshot-to-LLM UX */}
 
         {/* Solve Command */}
         {screenshots.length > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-[11px] leading-none">Solve</span>
-            <div className="flex gap-1">
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ⌘
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ↵
-              </button>
-            </div>
+            <KeyBadge keys={keySolve} />
           </div>
         )}
 
@@ -164,18 +153,11 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
               className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-2 py-1 text-[11px] leading-none text-white/70 flex items-center gap-1"
               onClick={onCodeHint}
               type="button"
-              title="Get a hint on your partially written code (⌘6)"
+              title={`Get a hint on your partially written code (${keyHint.join(isMac ? '' : '+')})`}
             >
               💡 Hint
             </button>
-            <div className="flex gap-1">
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ⌘
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                6
-              </button>
-            </div>
+            <KeyBadge keys={keyHint} />
           </div>
         )}
 
@@ -185,18 +167,11 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
             className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-2 py-1 text-[11px] leading-none text-white/70 flex items-center gap-1"
             onClick={onBrainstorm}
             type="button"
-            title="Brainstorm 2-3 problem-solving approaches (⌘7)"
+            title={`Brainstorm 2-3 problem-solving approaches (${keyBrainstorm.join(isMac ? '' : '+')})`}
           >
             🧠 Brainstorm
           </button>
-          <div className="flex gap-1">
-            <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-              ⌘
-            </button>
-            <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-              7
-            </button>
-          </div>
+          <KeyBadge keys={keyBrainstorm} />
         </div>
 
         {/* Voice Recording Button */}
@@ -236,9 +211,6 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
           </button>
         </div>
 
-        {/* Add this button in the main button row, before the separator and sign out */}
-        {/* Remove the Chat button */}
-
         {/* Question mark with tooltip */}
         <div
           className="relative inline-block"
@@ -259,35 +231,19 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
                 <div className="space-y-4">
                   <h3 className="font-medium truncate">Keyboard Shortcuts</h3>
                   <div className="space-y-3">
-                    {/* Toggle Command */}
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
                         <span className="truncate">Toggle Window</span>
-                        <div className="flex gap-1 flex-shrink-0">
-                          <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                            ⌘
-                          </span>
-                          <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                            B
-                          </span>
-                        </div>
+                        <KeyBadge keys={keyToggle} size="sm" />
                       </div>
                       <p className="text-[10px] leading-relaxed text-white/70 truncate">
                         Show or hide this window.
                       </p>
                     </div>
-                    {/* Screenshot Command */}
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
                         <span className="truncate">Take Screenshot</span>
-                        <div className="flex gap-1 flex-shrink-0">
-                          <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                            ⌘
-                          </span>
-                          <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                            H
-                          </span>
-                        </div>
+                        <KeyBadge keys={keyScreenshot} size="sm" />
                       </div>
                       <p className="text-[10px] leading-relaxed text-white/70 truncate">
                         Take a screenshot of the problem description. The tool
@@ -295,19 +251,10 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
                         screenshots are saved.
                       </p>
                     </div>
-
-                    {/* Solve Command */}
                     <div className="space-y-1">
                       <div className="flex items-center justify-between">
                         <span className="truncate">Solve Problem</span>
-                        <div className="flex gap-1 flex-shrink-0">
-                          <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                            ⌘
-                          </span>
-                          <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                            ↵
-                          </span>
-                        </div>
+                        <KeyBadge keys={keySolve} size="sm" />
                       </div>
                       <p className="text-[10px] leading-relaxed text-white/70 truncate">
                         Generate a solution based on the current problem.
@@ -323,7 +270,7 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
         {/* Separator */}
         <div className="mx-2 h-4 w-px bg-white/20" />
 
-        {/* Sign Out Button - Moved to end */}
+        {/* Sign Out Button */}
         <button
           className="text-red-500/70 hover:text-red-500/90 transition-colors"
           title="Sign Out"
@@ -338,8 +285,6 @@ const QueueCommands: React.FC<QueueCommandsProps> = ({
           <span className="font-semibold">Audio Result:</span> {audioResult}
         </div>
       )}
-      {/* Chat Dialog Overlay */}
-      {/* Remove the Dialog component */}
     </div>
   )
 }

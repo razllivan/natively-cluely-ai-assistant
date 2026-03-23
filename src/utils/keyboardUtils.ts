@@ -1,6 +1,9 @@
+import { getModifierSymbol } from './platformUtils';
+
 /**
- * Converts an Electron Accelerator string to an array of keys for the frontend.
- * Example: "CommandOrControl+Shift+Space" -> ["Meta", "Shift", "Space"]
+ * Converts an Electron Accelerator string to an array of display keys.
+ * Platform-aware: returns "Ctrl" on Windows/Linux, "⌘" on Mac.
+ * Example: "CommandOrControl+Shift+Space" -> ["Ctrl", "Shift", "Space"] (Windows)
  */
 export function acceleratorToKeys(accelerator: string): string[] {
     if (!accelerator) return [];
@@ -12,15 +15,15 @@ export function acceleratorToKeys(accelerator: string): string[] {
             case 'cmd':
             case 'command':
             case 'meta':
-                return '⌘';
+                return getModifierSymbol('commandorcontrol');
             case 'control':
             case 'ctrl':
-                return '⌃';
+                return getModifierSymbol('ctrl');
             case 'alt':
             case 'option':
-                return '⌥';
+                return getModifierSymbol('alt');
             case 'shift':
-                return '⇧';
+                return getModifierSymbol('shift');
             case 'up':
             case 'arrowup':
                 return '↑';
@@ -34,15 +37,15 @@ export function acceleratorToKeys(accelerator: string): string[] {
             case 'arrowright':
                 return '→';
             default:
-                // Capitalize first letter for consistency
                 return part.length === 1 ? part.toUpperCase() : part;
         }
     });
 }
 
 /**
- * Converts an array of keys from the frontend to an Electron Accelerator string.
- * Example: ["Meta", "Shift", "Space"] -> "CommandOrControl+Shift+Space"
+ * Converts an array of display keys to an Electron Accelerator string.
+ * Accepts both Mac symbols (⌘) and text modifiers (Ctrl).
+ * Example: ["Ctrl", "Shift", "Space"] -> "CommandOrControl+Shift+Space"
  */
 export function keysToAccelerator(keys: string[]): string {
     const modifiers: string[] = [];
@@ -54,12 +57,10 @@ export function keysToAccelerator(keys: string[]): string {
             case 'command':
             case 'cmd':
             case '⌘':
-                modifiers.push('CommandOrControl');
-                break;
-            case 'control':
             case 'ctrl':
+            case 'control':
             case '⌃':
-                modifiers.push('Control');
+                modifiers.push('CommandOrControl');
                 break;
             case 'alt':
             case 'option':
@@ -95,6 +96,5 @@ export function keysToAccelerator(keys: string[]): string {
         }
     });
 
-    // Electron expects modifiers first
     return [...modifiers, mainKey].filter(Boolean).join('+');
 }

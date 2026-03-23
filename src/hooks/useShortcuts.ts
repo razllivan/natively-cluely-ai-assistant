@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { acceleratorToKeys, keysToAccelerator } from '../utils/keyboardUtils';
+import { isMac, getPlatformShortcut } from '../utils/platformUtils';
 
 // Define the shape of our shortcuts configuration
 export interface ShortcutConfig {
@@ -30,31 +31,37 @@ export interface ShortcutConfig {
     selectiveScreenshot: string[];
 }
 
-export const DEFAULT_SHORTCUTS: ShortcutConfig = {
-    whatToAnswer: ['⌘', '1'],
-    autoAnswerMode: ['Command', 'f'],
-    clarify: ['Command', '2'],
-    followUp: ['⌘', '3'],
-    dynamicAction4: ['⌘', '4'],
-    answer: ['⌘', '5'],
-    codeHint: ['⌘', '6'],
-    brainstorm: ['⌘', '7'],
-    shorten: [],
-    recap: [],
-    scrollUp: ['↑'],
-    scrollDown: ['↓'],
-    moveWindowUp: ['⌘', 'Shift', '↑'],
-    moveWindowDown: ['⌘', 'Shift', '↓'],
-    moveWindowLeft: ['⌘', 'Shift', '←'],
-    moveWindowRight: ['⌘', 'Shift', '→'],
-    toggleVisibility: ['⌘', 'B'],
-    toggleMousePassthrough: ['⌘', 'Shift', 'B'],
-    processScreenshots: ['⌘', 'Enter'],
-    captureAndProcess: ['⌘', 'Shift', 'Enter'],
-    resetCancel: ['⌘', 'R'],
-    takeScreenshot: ['⌘', 'H'],
-    selectiveScreenshot: ['⌘', 'Shift', 'H']
-};
+function buildDefaultShortcuts(): ShortcutConfig {
+    const mod = getPlatformShortcut(['⌘'])[0]; // '⌘' on Mac, 'Ctrl' on Windows
+    const shift = getPlatformShortcut(['Shift'])[0]; // '⇧' on Mac, 'Shift' on Windows
+    return {
+        whatToAnswer: [mod, '1'],
+        autoAnswerMode: [mod, 'f'],
+        clarify: [mod, '2'],
+        followUp: [mod, '3'],
+        dynamicAction4: [mod, '4'],
+        answer: [mod, '5'],
+        codeHint: [mod, '6'],
+        brainstorm: [mod, '7'],
+        shorten: [],
+        recap: [],
+        scrollUp: ['↑'],
+        scrollDown: ['↓'],
+        moveWindowUp: [mod, shift, '↑'],
+        moveWindowDown: [mod, shift, '↓'],
+        moveWindowLeft: [mod, shift, '←'],
+        moveWindowRight: [mod, shift, '→'],
+        toggleVisibility: [mod, 'B'],
+        toggleMousePassthrough: [mod, shift, 'B'],
+        processScreenshots: [mod, 'Enter'],
+        captureAndProcess: [mod, shift, 'Enter'],
+        resetCancel: [mod, 'R'],
+        takeScreenshot: [mod, 'H'],
+        selectiveScreenshot: [mod, shift, 'H'],
+    };
+}
+
+export const DEFAULT_SHORTCUTS = buildDefaultShortcuts();
 
 export const useShortcuts = () => {
     // Initialize state with defaults
@@ -71,7 +78,7 @@ export const useShortcuts = () => {
                 // Map backend IDs to frontend keys
                 if (kb.id === 'chat:whatToAnswer') newShortcuts.whatToAnswer = keys;
                 else if (kb.id === 'app:toggle-global-overlay') newShortcuts.toggleGlobalOverlay = keys;
-                else if (kb.id === 'chat:followup') newShortcuts.followUp = keys;
+                else if (kb.id === 'chat:followUp') newShortcuts.followUp = keys;
                 else if (kb.id === 'chat:clarify') newShortcuts.clarify = keys;
                 else if (kb.id === 'chat:dynamicAction4') newShortcuts.dynamicAction4 = keys;
                 else if (kb.id === 'chat:answer') newShortcuts.answer = keys;
@@ -135,7 +142,7 @@ export const useShortcuts = () => {
             case 'whatToAnswer': backendId = 'chat:whatToAnswer'; break;
             case 'autoAnswerMode': backendId = 'chat:auto-answer-mode'; break;
             case 'clarify': backendId = 'chat:clarify'; break;
-            case 'followUp': backendId = 'chat:followup'; break;
+            case 'followUp': backendId = 'chat:followUp'; break;
             case 'dynamicAction4': backendId = 'chat:dynamicAction4'; break;
             case 'answer': backendId = 'chat:answer'; break;
             case 'codeHint': backendId = 'chat:codeHint'; break;
@@ -184,15 +191,25 @@ export const useShortcuts = () => {
         const keys = shortcuts[actionId];
         if (!keys || keys.length === 0) return false;
 
-        // Check modifiers
-        // Note: We use the symbols now in UI, but keyboard events still use standard properties
-        const hasMeta = keys.some(k => ['⌘', 'Command', 'Meta'].includes(k));
-        const hasCtrl = keys.some(k => ['⌃', 'Control', 'Ctrl'].includes(k));
+        // Platform-aware modifier matching:
+        // ⌘ on Mac = metaKey, ⌘ on Windows/Linux = ctrlKey (CommandOrControl semantics)
+        // Ctrl/⌃ always = ctrlKey
+        const hasCommandOrControl = keys.some(k => ['⌘', 'Command', 'Meta', '⌃', 'Control', 'Ctrl'].includes(k));
         const hasAlt = keys.some(k => ['⌥', 'Alt', 'Option'].includes(k));
         const hasShift = keys.some(k => ['⇧', 'Shift'].includes(k));
 
-        if (event.metaKey !== hasMeta) return false;
-        if (event.ctrlKey !== hasCtrl) return false;
+        if (isMac) {
+            // On Mac: ⌘ = metaKey, ⌃ = ctrlKey
+            const hasMeta = keys.some(k => ['⌘', 'Command', 'Meta'].includes(k));
+            const hasCtrl = keys.some(k => ['⌃', 'Control', 'Ctrl'].includes(k));
+            if (event.metaKey !== hasMeta) return false;
+            if (event.ctrlKey !== hasCtrl) return false;
+        } else {
+            // On Windows/Linux: both ⌘ and Ctrl map to ctrlKey (CommandOrControl)
+            if (hasCommandOrControl && !event.ctrlKey) return false;
+            if (!hasCommandOrControl && event.ctrlKey) return false;
+        }
+
         if (event.altKey !== hasAlt) return false;
         if (event.shiftKey !== hasShift) return false;
 
@@ -201,20 +218,14 @@ export const useShortcuts = () => {
             !['⌘', 'Command', 'Meta', '⇧', 'Shift', '⌥', 'Alt', 'Option', '⌃', 'Control', 'Ctrl'].includes(k)
         );
 
-        if (!mainKey) return false; // Modifiers only
+        if (!mainKey) return false;
 
-        // Normalize checks
         const eventKey = event.key.toLowerCase();
         const configKey = mainKey.toLowerCase();
 
-        // Handle Space specifically
         if (configKey === 'space') {
             return event.code === 'Space';
         }
-
-        // Handle Arrow keys
-        // Electron accelerator uses 'ArrowUp' (mapped from 'Up'), event.key is 'ArrowUp'
-        // So direct comparison usually works
 
         return eventKey === configKey;
     }, [shortcuts]);

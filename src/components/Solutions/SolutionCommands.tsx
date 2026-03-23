@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import { IoLogOutOutline } from "react-icons/io5"
+import { KeyBadge } from "../ui/KeyBadge"
+import { getPlatformShortcut, isMac } from "../../utils/platformUtils"
 
 interface SolutionCommandsProps {
   extraScreenshots: any[]
@@ -21,7 +23,7 @@ const SolutionCommands: React.FC<SolutionCommandsProps> = ({
     if (onTooltipVisibilityChange) {
       let tooltipHeight = 0
       if (tooltipRef.current && isTooltipVisible) {
-        tooltipHeight = tooltipRef.current.offsetHeight + 10 // Adjust if necessary
+        tooltipHeight = tooltipRef.current.offsetHeight + 10
       }
       onTooltipVisibilityChange(isTooltipVisible, tooltipHeight)
     }
@@ -35,6 +37,13 @@ const SolutionCommands: React.FC<SolutionCommandsProps> = ({
     setIsTooltipVisible(false)
   }
 
+  const keyToggle = getPlatformShortcut(['⌘', 'B'])
+  const keyScreenshot = getPlatformShortcut(['⌘', 'H'])
+  const keyDebug = getPlatformShortcut(['⌘', 'Enter'])
+  const keyHint = getPlatformShortcut(['⌘', '6'])
+  const keyBrainstorm = getPlatformShortcut(['⌘', '7'])
+  const keyStartOver = getPlatformShortcut(['⌘', 'R'])
+
   return (
     <div>
       <div className="pt-2 w-fit">
@@ -42,14 +51,7 @@ const SolutionCommands: React.FC<SolutionCommandsProps> = ({
           {/* Show/Hide */}
           <div className="flex items-center gap-2 whitespace-nowrap">
             <span className="text-[11px] leading-none">Show/Hide</span>
-            <div className="flex gap-1">
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ⌘
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                B
-              </button>
-            </div>
+            <KeyBadge keys={keyToggle} />
           </div>
 
           {/* Screenshot */}
@@ -59,47 +61,26 @@ const SolutionCommands: React.FC<SolutionCommandsProps> = ({
                 ? "Screenshot your code"
                 : "Screenshot"}
             </span>
-            <div className="flex gap-1">
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ⌘
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                H
-              </button>
-            </div>
+            <KeyBadge keys={keyScreenshot} />
           </div>
           {extraScreenshots.length > 0 && (
             <div className="flex items-center gap-2 whitespace-nowrap">
               <span className="text-[11px] leading-none">Debug</span>
-              <div className="flex gap-1">
-                <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                  ⌘
-                </button>
-                <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                  ↵
-                </button>
-              </div>
+              <KeyBadge keys={keyDebug} />
             </div>
           )}
 
-          {/* Hint — always available in solutions view since code is always on screen */}
+          {/* Hint */}
           <div className="flex items-center gap-2 whitespace-nowrap">
             <button
               className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-2 py-1 text-[11px] leading-none text-white/70 flex items-center gap-1"
               onClick={onCodeHint}
               type="button"
-              title="Screenshot your code first (⌘H), then press ⌘6 to get a hint"
+              title={`Screenshot your code first (${keyScreenshot.join(isMac ? '' : '+')}) then press ${keyHint.join(isMac ? '' : '+')} to get a hint`}
             >
               💡 Hint
             </button>
-            <div className="flex gap-1">
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ⌘
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                6
-              </button>
-            </div>
+            <KeyBadge keys={keyHint} />
           </div>
 
           {/* Brainstorm */}
@@ -112,27 +93,13 @@ const SolutionCommands: React.FC<SolutionCommandsProps> = ({
             >
               🧠 Brainstorm
             </button>
-            <div className="flex gap-1">
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ⌘
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                7
-              </button>
-            </div>
+            <KeyBadge keys={keyBrainstorm} />
           </div>
 
           {/* Start Over */}
           <div className="flex items-center gap-2 whitespace-nowrap">
             <span className="text-[11px] leading-none">Start over</span>
-            <div className="flex gap-1">
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                ⌘
-              </button>
-              <button className="bg-white/10 hover:bg-white/20 transition-colors rounded-md px-1.5 py-1 text-[11px] leading-none text-white/70">
-                R
-              </button>
-            </div>
+            <KeyBadge keys={keyStartOver} />
           </div>
 
           {/* Question Mark with Tooltip */}
@@ -141,12 +108,10 @@ const SolutionCommands: React.FC<SolutionCommandsProps> = ({
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
           >
-            {/* Question mark circle */}
             <div className="w-6 h-6 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors flex items-center justify-center cursor-help z-10">
               <span className="text-xs text-white/70">?</span>
             </div>
 
-            {/* Tooltip Content */}
             {isTooltipVisible && (
               <div
                 ref={tooltipRef}
@@ -154,45 +119,24 @@ const SolutionCommands: React.FC<SolutionCommandsProps> = ({
                 style={{ zIndex: 100 }}
               >
                 <div className="p-3 text-xs bg-black/80 backdrop-blur-md rounded-lg border border-white/10 text-white/90 shadow-lg">
-                  {/* Tooltip content */}
                   <div className="space-y-4">
                     <h3 className="font-medium whitespace-nowrap">
                       Keyboard Shortcuts
                     </h3>
                     <div className="space-y-3">
-                      {/* Toggle Command */}
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="whitespace-nowrap">
-                            Toggle Window
-                          </span>
-                          <div className="flex gap-1">
-                            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                              ⌘
-                            </span>
-                            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                              B
-                            </span>
-                          </div>
+                          <span className="whitespace-nowrap">Toggle Window</span>
+                          <KeyBadge keys={keyToggle} size="sm" />
                         </div>
                         <p className="text-[10px] leading-relaxed text-white/70 whitespace-nowrap truncate">
                           Show or hide this window.
                         </p>
                       </div>
-                      {/* Screenshot Command */}
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
-                          <span className="whitespace-nowrap">
-                            Take Screenshot
-                          </span>
-                          <div className="flex gap-1">
-                            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                              ⌘
-                            </span>
-                            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                              H
-                            </span>
-                          </div>
+                          <span className="whitespace-nowrap">Take Screenshot</span>
+                          <KeyBadge keys={keyScreenshot} size="sm" />
                         </div>
                         <p className="text-[10px] leading-relaxed text-white/70 whitespace-nowrap truncate">
                           Capture additional parts of the question or your
@@ -200,36 +144,20 @@ const SolutionCommands: React.FC<SolutionCommandsProps> = ({
                           are saved.
                         </p>
                       </div>
-                      {/* Debug Command */}
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="whitespace-nowrap">Debug</span>
-                          <div className="flex gap-1">
-                            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                              ⌘
-                            </span>
-                            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                              ↵
-                            </span>
-                          </div>
+                          <KeyBadge keys={keyDebug} size="sm" />
                         </div>
                         <p className="text-[10px] leading-relaxed text-white/70 whitespace-nowrap truncate">
                           Generate new solutions based on all previous and newly
                           added screenshots.
                         </p>
                       </div>
-                      {/* Start Over Command */}
                       <div className="space-y-1">
                         <div className="flex items-center justify-between">
                           <span className="whitespace-nowrap">Start Over</span>
-                          <div className="flex gap-1">
-                            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                              ⌘
-                            </span>
-                            <span className="bg-white/10 px-1.5 py-0.5 rounded text-[10px] leading-none">
-                              R
-                            </span>
-                          </div>
+                          <KeyBadge keys={keyStartOver} size="sm" />
                         </div>
                         <p className="text-[10px] leading-relaxed text-white/70 whitespace-nowrap truncate">
                           Start fresh with a new question.

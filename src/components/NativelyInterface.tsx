@@ -43,6 +43,7 @@ import 'katex/dist/katex.min.css';
 import { analytics, detectProviderType } from '../lib/analytics/analytics.service';
 import { useShortcuts } from '../hooks/useShortcuts';
 import { useResolvedTheme } from '../hooks/useResolvedTheme';
+import { getPlatformShortcut } from '../utils/platformUtils';
 import { getOverlayAppearance, OVERLAY_OPACITY_DEFAULT } from '../lib/overlayAppearance';
 
 interface Message {
@@ -2061,7 +2062,7 @@ Provide only the answer, nothing else.`;
                                         <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none text-[13px] overlay-text-muted">
                                             <span>Ask anything on screen or conversation, or</span>
                                             <div className="flex items-center gap-1 opacity-80">
-                                                {(shortcuts.selectiveScreenshot || ['⌘', 'Shift', 'H']).map((key, i) => (
+                                                {(shortcuts.selectiveScreenshot || getPlatformShortcut(['⌘', 'Shift', 'H'])).map((key, i) => (
                                                     <React.Fragment key={i}>
                                                         {i > 0 && <span className="text-[10px]">+</span>}
                                                         <kbd className="px-1.5 py-0.5 rounded border text-[10px] font-sans min-w-[20px] text-center overlay-control-surface overlay-text-secondary" style={appearance.controlStyle}>{key}</kbd>

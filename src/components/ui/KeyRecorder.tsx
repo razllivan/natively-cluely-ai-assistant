@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Check } from 'lucide-react';
+import { isMac } from '../../utils/platformUtils';
 
 interface KeyRecorderProps {
     currentKeys: string[];
@@ -31,10 +32,15 @@ export const KeyRecorder: React.FC<KeyRecorderProps> = ({ currentKeys, onSave, c
         const shift = e.shiftKey;
 
         // Ignore modifier key presses alone if possible, but we need to show them
-        const modifiers = [];
-        if (meta) modifiers.push('⌘');
-        if (ctrl) modifiers.push('⌃');
-        if (alt) modifiers.push('⌥');
+        // Platform-aware modifier symbols
+        const modifiers: string[] = [];
+        if (isMac) {
+            if (meta) modifiers.push('⌘');
+            if (ctrl) modifiers.push('⌃');
+        } else {
+            if (meta || ctrl) modifiers.push('Ctrl');
+        }
+        if (alt) modifiers.push(isMac ? '⌥' : 'Alt');
         if (shift) modifiers.push('⇧');
 
         let mainKey = '';

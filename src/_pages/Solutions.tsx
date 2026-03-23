@@ -15,6 +15,7 @@ import {
 import { Solution } from "../types/solutions"
 import SolutionCommands from "../components/Solutions/SolutionCommands"
 import Debug from "./Debug"
+import { getPlatformShortcut, isMac } from "../utils/platformUtils"
 
 // ─── Phase Card ──────────────────────────────────────────────────────────────
 
@@ -364,7 +365,7 @@ const Solutions: React.FC<SolutionsProps> = ({ setView }) => {
             {/* Empty — not generating and no solution yet */}
             {!isGenerating && !solution && (
               <p className="text-center text-white/30 text-[13px] py-6">
-                Take a screenshot of your problem (⌘H) and press ⌘↵ to generate the script.
+                Take a screenshot of your problem ({getPlatformShortcut(['⌘', 'H']).join(isMac ? '' : '+')}) and press {getPlatformShortcut(['⌘', 'Enter']).join(isMac ? '' : '+')} to generate the script.
               </p>
             )}
 
