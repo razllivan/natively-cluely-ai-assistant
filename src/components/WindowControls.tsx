@@ -4,14 +4,14 @@ import { Minus, X } from 'lucide-react';
 const WindowControls: React.FC = () => {
   const [isMaximized, setIsMaximized] = useState(false);
 
-  const isMac = typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('mac');
-  if (isMac) return null;
-
   useEffect(() => {
     return window.electronAPI?.onWindowMaximizedChanged((maximized: boolean) => {
       setIsMaximized(maximized);
     });
   }, []);
+
+  const isMac = typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('mac');
+  if (isMac) return null;
 
   const handleMinimize = () => window.electronAPI?.windowMinimize();
   const handleMaximize = () => window.electronAPI?.windowMaximize();
